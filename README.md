@@ -2,11 +2,18 @@
 
 Plop a site on your desktop, best for videos, social media feeds, stock tickers, etc.
 
+## Usage
+
+```sh
+# Fireplace
+plop https://www.youtube.com/embed/eyU3bRy2x44\?autoplay\=1
+```
+
 ## Features
-- Always on top (or not)
-- Adjust opacity
-- Scale view or font size
-- Drag anywhere to move
+- [ ] Always on top (or not)
+- [ ] Adjust opacity
+- [ ] Scale view or font size
+- [ ] Drag anywhere to move
 
 ## Build wxWidgets
 
