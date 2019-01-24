@@ -25,12 +25,23 @@ public:
 
     virtual bool OnInit();
 
-#if wxUSE_CMDLINE_PARSER
     virtual void OnInitCmdLine(wxCmdLineParser& parser)
     {
         wxApp::OnInitCmdLine(parser);
 
-        parser.AddParam("URL to open",
+        parser.AddOption("W",
+                         "width",
+                         _("WIDTH of Window"),
+                         wxCMD_LINE_VAL_NUMBER,
+                         wxCMD_LINE_PARAM_OPTIONAL);
+
+        parser.AddOption("H",
+                         "height",
+                         _("HEIGHT of Window"),
+                         wxCMD_LINE_VAL_NUMBER,
+                         wxCMD_LINE_PARAM_OPTIONAL);
+
+        parser.AddParam("URL",
                         wxCMD_LINE_VAL_STRING,
                         wxCMD_LINE_PARAM_OPTIONAL);
     }
@@ -43,18 +54,22 @@ public:
         if ( parser.GetParamCount() )
             m_url = parser.GetParam(0);
 
+        parser.Found("W", &m_width);
+        parser.Found("H", &m_height);
+
         return true;
     }
-#endif // wxUSE_CMDLINE_PARSER
 
 private:
     wxString m_url;
+    long m_width;
+    long m_height;
 };
 
 class WebFrame : public wxFrame
 {
 public:
-    WebFrame(const wxString& url);
+    WebFrame(const wxString& url, long width, long height);
     virtual ~WebFrame();
 
     void UpdateState();
@@ -98,7 +113,7 @@ bool WebApp::OnInit()
 
     // Create the memory files
     wxImage::AddHandler(new wxPNGHandler);
-    WebFrame *frame = new WebFrame(m_url);
+    WebFrame *frame = new WebFrame(m_url, m_width, m_height);
     // like a dialog
     frame->SetWindowStyle(wxCENTRE | wxFRAME_TOOL_WINDOW | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX | wxCLIP_CHILDREN | wxSTAY_ON_TOP);
 
@@ -109,8 +124,6 @@ bool WebApp::OnInit()
     wxMenuBar* menubar = new wxMenuBar();
     menubar->Append(mainMenu, _("View"));
     wxMenuBar::MacSetCommonMenuBar(menubar);
-    //frame->SetMenuBar(menubar);
-//    // Mac Mac menu
 #endif
 
     frame->Center();
@@ -118,7 +131,7 @@ bool WebApp::OnInit()
     return true;
 }
 
-WebFrame::WebFrame(const wxString& url) :
+WebFrame::WebFrame(const wxString& url, long width, long height) :
     wxFrame(NULL, wxID_ANY, _("wxWebView Sample"))
 {
     // set the frame icon
@@ -133,7 +146,7 @@ WebFrame::WebFrame(const wxString& url) :
     SetSizer(topsizer);
 
     // 16:9 Movies
-    SetSize(wxSize(512, 288));
+    SetSize(wxSize(width > 0 ? width : 512, height > 0 ? height : 288));
 
     // Create a log window
     // new wxLogWindow(this, _("Logging"), true, false);
